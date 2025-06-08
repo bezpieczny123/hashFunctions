@@ -9,8 +9,6 @@ std::ofstream file;
 
 std::chrono::steady_clock::time_point begin, end;
 
-// We use a fixed seed for the benchmark data to make runs reproducible.
-// A different seed is used for the keys to be tested.
 std::mt19937 data_gen(42);
 std::mt19937 test_gen(123);
 std::uniform_int_distribution<> dist(0, 500000);
