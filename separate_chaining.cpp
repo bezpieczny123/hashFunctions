@@ -4,7 +4,7 @@
 #include <cmath>
 #include <cstddef>
 
-// Created by mikol on 8.06.2025.
+// Created by mat on 10.06.2025.
 enum ChainHashMethod {
     CHAIN_MODULO,
     CHAIN_MULTIPLICATION,
