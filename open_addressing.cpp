@@ -1,5 +1,6 @@
 #include <functional>
 #include <cmath>
+#include <cstddef>
 
 // Created by mikol on 8.06.2025.
 enum HashMethod {
@@ -23,7 +24,7 @@ public:
         capacity = 100000;
         size = 0;
         hashMethod = method;
-        table = new K*[capacity];
+        table = new K * [capacity];
 
         for (int i = 0; i < capacity; i++) {
             table[i] = nullptr;
@@ -46,32 +47,31 @@ public:
         const size_t hashValue = hasher(item);
 
         switch (hashMethod) {
-            case MODULO:
-                return moduloHash(hashValue);
-            case MULTIPLICATION:
-                return multiplicationHash(hashValue);
-            case ALGEBRAIC:
-                return algebraicHash(hashValue);
-            default:
-                return moduloHash(hashValue);
+        case MODULO:
+            return moduloHash(hashValue);
+        case MULTIPLICATION:
+            return multiplicationHash(hashValue);
+        case ALGEBRAIC:
+            return algebraicHash(hashValue);
+        default:
+            return moduloHash(hashValue);
         }
     }
 
-    int moduloHash(const K& item) {
-        return item % capacity;
+    int moduloHash(size_t rawHashValue) {
+        return static_cast<int>(rawHashValue % capacity);
     }
 
-    int multiplicationHash(const K& item) {
-        double A = 0.6180339887; // Golden ratio constant
-        double temp = item * A;
-        temp = temp - floor(temp); // Get fractional part
-        return (int)(capacity * temp);
+    int multiplicationHash(size_t rawHashValue) {
+        double temp = static_cast<double>(rawHashValue) * A;
+        temp = temp - std::floor(temp);
+        return static_cast<int>(capacity * temp);
     }
 
-    int algebraicHash(size_t hashValue) {
+    int algebraicHash(size_t rawHashValue) {
         constexpr size_t a = 31;
         constexpr size_t b = 17;
-        return ((a * hashValue + b) % capacity + capacity) % capacity;
+        return static_cast<int>(((a * rawHashValue + b) % capacity + capacity) % capacity);
     }
 
     void insert(const K& item) {
