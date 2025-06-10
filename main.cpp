@@ -4,6 +4,7 @@
 #include <vector>
 #include <random>
 #include "open_addressing.cpp"
+#include "separate_chaining.cpp"
 
 std::ofstream file;
 
@@ -26,14 +27,15 @@ void stopTimer() {
     block; \
     stopTimer();
 
-template <template <typename> class HashType>
-void measure_hash(const std::string& hashName, const std::vector<int>& tableSizes, HashMethod method) {
+template <template <typename> class HashType, typename HashEnum>
+void measure_hash(const std::string& hashName, const std::vector<int>& tableSizes, HashEnum method)
+{
     file.open(hashName + ".csv");
     file << hashName << "\n";
     file << "fill_percentage,insert_time_ns,delete_time_ns\n";
 
     const int capacity = 100000;
-    const int measurement_ops = 1000;
+    const int measurement_ops = 100;
 
     for (int current_size : tableSizes) {
         if (current_size == 0) continue;
@@ -76,13 +78,19 @@ int main() {
     const int n = 100000;
     std::vector<int> tableFullLevels;
 
-    for (int i = 10; i <= 95; i += 5) {
+    for (int i = 5; i <= 95; i += 5) {
         tableFullLevels.push_back(n * i / 100);
     }
 
+    // Open Addressing
     measure_hash<HashTable>("OpenAddressingModulo", tableFullLevels, MODULO);
     measure_hash<HashTable>("OpenAddressingMultiplication", tableFullLevels, MULTIPLICATION);
     measure_hash<HashTable>("OpenAddressingAlgebraic", tableFullLevels, ALGEBRAIC);
+
+    // Separate Chaining
+    measure_hash<ChainHashTable>("ChainingModulo", tableFullLevels, CHAIN_MODULO);
+    measure_hash<ChainHashTable>("ChainingMultiplication", tableFullLevels, CHAIN_MULTIPLICATION);
+    measure_hash<ChainHashTable>("ChainingAlgebraic", tableFullLevels, CHAIN_ALGEBRAIC);
 
     return EXIT_SUCCESS;
 }
